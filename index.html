@@ -66,8 +66,8 @@
           <label class="compact-control" for="ancestry-depth">
             <span>Detail</span>
             <select id="ancestry-depth">
-              <option value="broad">Broad</option>
-              <option value="detailed" selected>Detailed</option>
+              <option value="broad" selected>Broad overview</option>
+              <option value="detailed">Detailed populations</option>
             </select>
           </label>
         </div>
@@ -75,7 +75,13 @@
         <div class="ancestry-layout">
           <ol class="composition-list" id="composition-list"></ol>
           <div class="regional-notes">
-            <h3>Regional signals</h3>
+            <div class="subsection-heading">
+              <div>
+                <h3>Regional signals</h3>
+                <p>Locations with the strongest matches</p>
+              </div>
+              <button type="button" class="text-button" id="regional-toggle" aria-expanded="false"></button>
+            </div>
             <div id="regional-signals" class="regional-signal-list"></div>
           </div>
         </div>
@@ -121,6 +127,10 @@
           </div>
         </div>
         <p class="section-note">Switch among all six captured confidence views. Copies are labeled A and B because this result did not expose a maternal/paternal assignment.</p>
+        <details class="painting-key" id="painting-key" open>
+          <summary id="painting-key-summary">Color key</summary>
+          <div class="painting-legend" id="painting-legend" aria-label="Chromosome painting color key"></div>
+        </details>
         <div class="chromosome-plot" id="chromosome-plot" aria-label="Chromosome ancestry segments"></div>
         <p class="plot-status" id="plot-status" role="status" aria-live="polite"></p>
       </section>
@@ -206,7 +216,7 @@
         <h2 id="dialog-title"></h2>
         <p class="dialog-result" id="dialog-result"></p>
         <p id="dialog-description"></p>
-        <div class="dialog-notes" id="dialog-notes"></div>
+        <details class="dialog-notes" id="dialog-notes"></details>
         <dl class="dialog-facts" id="dialog-facts"></dl>
         <div class="dialog-variants" id="dialog-variants"></div>
         <button type="button" class="text-button" id="dialog-done">Done</button>

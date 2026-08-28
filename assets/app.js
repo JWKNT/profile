@@ -26,6 +26,45 @@
   $("#dataset-date").textContent = meta.captured;
   $("#dataset-version").textContent = `Ancestry v${meta.ancestryVersion} · chip ${meta.genotypingChip}`;
 
+  const sectionLinks = [...document.querySelectorAll(".section-index a")];
+  const sectionIndex = $(".section-index");
+  const indexedSections = sectionLinks.map((link) => document.querySelector(link.hash)).filter(Boolean);
+  let sectionFrame;
+  let activeSectionId = "";
+  const updateCurrentSection = () => {
+    const marker = window.scrollY + $(".section-index").offsetHeight + 64;
+    const current = indexedSections.reduce(
+      (match, section) => section.offsetTop <= marker ? section : match,
+      null
+    );
+    sectionLinks.forEach((link) => {
+      if (current && link.hash === `#${current.id}`) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+    if (current && current.id !== activeSectionId) {
+      activeSectionId = current.id;
+      const activeLink = sectionLinks.find((link) => link.hash === `#${current.id}`);
+      if (activeLink && window.matchMedia("(max-width: 620px)").matches) {
+        sectionIndex.scrollTo({
+          left: activeLink.offsetLeft - (sectionIndex.clientWidth - activeLink.offsetWidth) / 2,
+          behavior: "smooth"
+        });
+      }
+    }
+  };
+  window.addEventListener("scroll", () => {
+    if (sectionFrame) return;
+    sectionFrame = window.requestAnimationFrame(() => {
+      updateCurrentSection();
+      sectionFrame = null;
+    });
+  }, { passive: true });
+  sectionLinks.forEach((link) => link.addEventListener("click", () => {
+    sectionLinks.forEach((item) => item.removeAttribute("aria-current"));
+    link.setAttribute("aria-current", "location");
+  }));
+  updateCurrentSection();
+
   const metrics = [
     ["Ancestry", formatPercent(ancestry.total.percent)],
     ["Reports", meta.counts.reports.toLocaleString()],
@@ -74,9 +113,11 @@
   renderComposition();
 
   const signalList = $("#regional-signals");
-  ancestry.regionalSignals.forEach((signal) => {
+  ancestry.regionalSignals.forEach((signal, index) => {
     const row = ancestry.detailed.find((item) => item.name === signal.name);
     const item = el("div", "regional-signal");
+    item.dataset.overflowSignal = String(index >= 6);
+    item.hidden = index >= 6;
     const swatch = el("span", "signal-swatch");
     swatch.style.setProperty("--swatch", row?.color || "var(--blue)");
     const copy = el("div");
@@ -85,6 +126,18 @@
     copy.append(el("span", "", `${signal.regions.join(" · ")}${suffix}`));
     item.append(swatch, copy);
     signalList.append(item);
+  });
+
+  const regionalToggle = $("#regional-toggle");
+  const additionalSignals = ancestry.regionalSignals.length - 6;
+  regionalToggle.textContent = `Show all ${ancestry.regionalSignals.length}`;
+  regionalToggle.addEventListener("click", () => {
+    const expanded = regionalToggle.getAttribute("aria-expanded") === "true";
+    signalList.querySelectorAll("[data-overflow-signal='true']").forEach((item) => {
+      item.hidden = expanded;
+    });
+    regionalToggle.setAttribute("aria-expanded", String(!expanded));
+    regionalToggle.textContent = expanded ? `Show all ${ancestry.regionalSignals.length}` : `Show ${additionalSignals} fewer`;
   });
 
   const versionBody = $("#version-table-body");
@@ -101,7 +154,9 @@
   const timelineKey = $("#timeline-key");
   timelineKey.append(el("span", "", "Population"));
   ancestry.timelineScale.slice(1).forEach((point) => {
-    timelineKey.append(el("span", "", `${point.generation} · ${point.year}`));
+    const key = el("span", "timeline-key-point");
+    key.append(el("small", "", `Gen. ${point.generation}`), el("strong", "", String(point.year)));
+    timelineKey.append(key);
   });
 
   const timeline = $("#ancestry-timeline");
@@ -118,6 +173,7 @@
     range.tabIndex = 0;
     range.title = entry.description;
     range.setAttribute("aria-label", `${entry.name}: generations ${entry.generationRange}, between ${entry.estimatedYears}`);
+    range.append(el("span", "timeline-range-label", entry.estimatedYears.replace(" and ", "–")));
     track.append(range);
     row.append(track);
     timeline.append(row);
@@ -134,12 +190,52 @@
 
   const plot = $("#chromosome-plot");
   const plotStatus = $("#plot-status");
+  const paintingLegend = $("#painting-legend");
+  const paintingKey = $("#painting-key");
+  const paintingKeySummary = $("#painting-key-summary");
+  if (window.matchMedia("(max-width: 620px)").matches) paintingKey.open = false;
   let activeCopy = "both";
+  let activePopulation = null;
+  let displayedSegmentCount = 0;
+  let displayedChromosomeCount = 0;
+
+  function updatePaintingHighlight() {
+    document.querySelectorAll(".segment").forEach((segment) => {
+      const matches = !activePopulation || segment.dataset.population === activePopulation;
+      segment.classList.toggle("is-muted", !matches);
+      segment.classList.toggle("is-highlighted", Boolean(activePopulation && matches));
+    });
+    document.querySelectorAll(".legend-button").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.population === activePopulation));
+    });
+    const isolate = activePopulation ? ` · isolating ${activePopulation}` : "";
+    plotStatus.textContent = `${confidence.value} confidence · ${displayedSegmentCount.toLocaleString()} displayed assignments · ${displayedChromosomeCount} chromosomes${isolate}`;
+  }
+
+  function renderPaintingLegend(palette) {
+    paintingLegend.replaceChildren();
+    paintingKeySummary.textContent = `Color key · ${palette.size} populations`;
+    if (activePopulation && !palette.has(activePopulation)) activePopulation = null;
+    palette.forEach((color, name) => {
+      const button = el("button", "legend-button", name);
+      button.type = "button";
+      button.dataset.population = name;
+      button.style.setProperty("--legend", color);
+      button.setAttribute("aria-pressed", String(name === activePopulation));
+      button.title = `Isolate ${name} segments`;
+      button.addEventListener("click", () => {
+        activePopulation = activePopulation === name ? null : name;
+        updatePaintingHighlight();
+      });
+      paintingLegend.append(button);
+    });
+  }
 
   function renderPainting() {
     const chromosomes = ancestry.paintings[confidence.value];
     plot.replaceChildren();
     let visibleSegments = 0;
+    const palette = new Map();
 
     chromosomes.forEach((chromosome) => {
       const row = el("div", "chromosome-row");
@@ -158,11 +254,15 @@
           piece.style.setProperty("--left", `${segment.left}%`);
           piece.style.setProperty("--width", `${segment.width}%`);
           piece.style.setProperty("--segment", segment.color);
+          piece.dataset.population = segment.name;
           piece.tabIndex = 0;
           piece.title = `${segment.name} · chromosome ${chromosome.number}${copyName.toUpperCase()} · ${segment.left.toFixed(2)}–${(segment.left + segment.width).toFixed(2)}%`;
           piece.setAttribute("aria-label", piece.title);
           track.append(piece);
-          if (!track.hidden) visibleSegments += 1;
+          if (!track.hidden) {
+            visibleSegments += 1;
+            if (!palette.has(segment.name)) palette.set(segment.name, segment.color);
+          }
         });
         const centromere = el("span", "centromere");
         centromere.style.setProperty("--centromere", `${copy.centromere}%`);
@@ -173,7 +273,10 @@
       plot.append(row);
     });
 
-    plotStatus.textContent = `${confidence.value} confidence · ${visibleSegments.toLocaleString()} displayed ancestry assignments · ${chromosomes.length} chromosomes`;
+    displayedSegmentCount = visibleSegments;
+    displayedChromosomeCount = chromosomes.length;
+    renderPaintingLegend(palette);
+    updatePaintingHighlight();
   }
 
   confidence.addEventListener("change", renderPainting);
@@ -283,6 +386,10 @@
   const reportStatus = $("#report-status");
   const reportEmpty = $("#report-empty");
   const dialog = $("#report-dialog");
+  const isReportLocked = (report) => report.locked || /tasks required|complete tasks to view/i.test(report.result);
+  const displayResult = (report) => isReportLocked(report)
+    ? "Locked — account task required"
+    : (report.result || "No result text captured");
 
   function searchableText(report) {
     return [
@@ -298,12 +405,14 @@
   function openReport(report) {
     $("#dialog-category").textContent = report.category;
     $("#dialog-title").textContent = report.title;
-    $("#dialog-result").textContent = report.result || (report.locked ? "Result not unlocked" : "No result text captured");
+    $("#dialog-result").textContent = displayResult(report);
     $("#dialog-description").textContent = report.description || "No report description was exposed.";
 
     const notes = $("#dialog-notes");
     notes.replaceChildren();
     if (report.personalNotes.length) {
+      notes.open = false;
+      notes.append(el("summary", "", `Report interpretation · ${report.personalNotes.length} notes`));
       const list = el("ul");
       report.personalNotes.forEach((note) => list.append(el("li", "", note.replace(/^This profile,\s*/i, ""))));
       notes.append(list);
@@ -314,7 +423,7 @@
 
     const facts = $("#dialog-facts");
     facts.replaceChildren(
-      el("dt", "", "Status"), el("dd", "", report.locked ? "Locked behind a required account task" : "Accessible"),
+      el("dt", "", "Status"), el("dd", "", isReportLocked(report) ? "Locked behind a required account task" : "Accessible"),
       el("dt", "", "Tested markers"), el("dd", "", report.variants.length.toLocaleString())
     );
 
@@ -329,6 +438,7 @@
       const body = el("tbody");
       report.variants.forEach((variant) => {
         const row = el("tr");
+        if (variant.status === "detected") row.className = "variant-detected";
         appendTextCell(row, variant.name);
         appendTextCell(row, variant.gene);
         appendTextCell(row, variant.marker);
@@ -357,10 +467,11 @@
       const row = el("tr", "report-row");
       row.tabIndex = 0;
       row.setAttribute("role", "button");
-      row.setAttribute("aria-label", `Open ${report.title}: ${report.result}`);
-      appendTextCell(row, report.title, "report-name");
+      row.setAttribute("aria-label", `Open ${report.title}: ${displayResult(report)}`);
+      const nameCell = appendTextCell(row, report.title, "report-name");
+      nameCell.append(el("span", "row-action", "View →"));
       appendTextCell(row, report.category, "report-category");
-      appendTextCell(row, report.result || (report.locked ? "Locked" : "—"), "report-result");
+      appendTextCell(row, displayResult(report), "report-result");
       appendTextCell(row, report.variants.length ? report.variants.length.toLocaleString() : "—", "report-markers");
       row.addEventListener("click", () => openReport(report));
       row.addEventListener("keydown", (event) => {
@@ -404,4 +515,13 @@
   fillList("#removed-list", privacy.removed);
   fillList("#processing-notes", privacy.processing);
   $("#processing-count").textContent = `(${privacy.processing.length})`;
+
+  if (location.hash) {
+    const alignHashTarget = () => {
+      const target = document.getElementById(location.hash.slice(1));
+      if (target) target.scrollIntoView({ block: "start" });
+    };
+    window.requestAnimationFrame(alignHashTarget);
+    window.setTimeout(alignHashTarget, 250);
+  }
 })();

@@ -64,5 +64,8 @@ test("the interactive shell exposes every major captured section", () => {
     assert.match(html, new RegExp(`id=["']${id}["']`));
   }
   assert.match(html, /painting-confidence/);
+  assert.match(html, /id="painting-key"/);
+  assert.match(html, /id="regional-toggle"/);
   assert.match(html, /report-search/);
+  assert.match(html, /<option value="broad" selected>Broad overview<\/option>/);
 });
