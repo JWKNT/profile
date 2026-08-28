@@ -1,6 +1,6 @@
 # Genetic Profile
 
-A static, dependency-free, interactive presentation of one consumer-genetics dataset. It follows the shared [JWKNT site theme](https://github.com/JWKNT/site-theme) and deploys through GitHub Pages.
+A static, dependency-free, interactive presentation of one consumer-genetics dataset. It follows the shared [jehlp.net site theme](https://jehlp.net/site-theme/) and deploys through GitHub Pages.
 
 ## Included
 

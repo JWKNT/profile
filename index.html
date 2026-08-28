@@ -7,13 +7,15 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Genetic Profile">
     <meta property="og:description" content="An anonymized, interactive exploration of ancestry, lineage, health, wellness, and traits.">
-    <meta property="og:url" content="https://jwknt.github.io/profile/">
+    <meta property="og:url" content="https://jehlp.net/profile/">
+    <meta property="og:site_name" content="jehlp.net">
     <meta name="twitter:card" content="summary">
-    <meta name="theme-color" content="#ffffff">
-    <title>Genetic Profile</title>
-    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-    <script src="https://jehlp.net/site-theme/v1/theme.js"></script>
-    <link rel="stylesheet" href="https://jehlp.net/site-theme/v1/base.css">
+    <meta name="theme-color" content="#fbfaf7">
+    <link rel="canonical" href="https://jehlp.net/profile/">
+    <title>Genetic Profile · jehlp.net</title>
+    <link rel="icon" href="https://jehlp.net/site-theme/v2/favicons/profile.png" type="image/png">
+    <script src="https://jehlp.net/site-theme/v2/theme.js"></script>
+    <link rel="stylesheet" href="https://jehlp.net/site-theme/v2/base.css">
     <link rel="stylesheet" href="assets/styles.css">
     <script src="data/profile-data.js" defer></script>
     <script src="assets/app.js" defer></script>
@@ -24,30 +26,13 @@
     <header class="site-header">
       <a class="site-title" href="./">Genetic Profile</a>
       <nav aria-label="Site links">
-        <a href="#ancestry" aria-current="page">Explore</a>
+        <a href="https://jehlp.net/">Projects</a>
         <a href="#privacy">Privacy</a>
-        <a href="https://github.com/JWKNT/profile">Source</a>
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Use dark theme">◐</button>
       </nav>
     </header>
 
     <main id="profile" class="profile-shell">
-      <section class="profile-intro" aria-labelledby="page-title">
-        <div>
-          <p class="eyebrow">Anonymized personal dataset</p>
-          <h1 id="page-title">A genome, in broad strokes</h1>
-          <p class="intro-copy">An interactive view of consumer-genetics results, published without direct account identifiers, relatives, or a raw genome-wide genotype file.</p>
-        </div>
-        <p class="data-stamp"><span>Dataset</span><strong id="dataset-date">Loading…</strong><small id="dataset-version"></small></p>
-      </section>
-
-      <aside class="privacy-notice" aria-labelledby="privacy-notice-title">
-        <strong id="privacy-notice-title">Privacy boundary</strong>
-        <p>Interpreted results and the markers disclosed inside those reports appear here. Direct identifiers, the raw genome-wide file, relatives, addresses, and account activity are excluded.</p>
-      </aside>
-
-      <dl class="headline-metrics" id="headline-metrics" aria-label="Profile summary"></dl>
-
       <nav class="section-index" aria-label="Profile sections">
         <a href="#ancestry">Ancestry</a>
         <a href="#timeline">Timeline</a>
@@ -61,7 +46,7 @@
         <div class="section-heading">
           <div>
             <p class="section-kicker">Composition estimate</p>
-            <h2 id="ancestry-heading">Ancestry</h2>
+            <h1 id="ancestry-heading">Ancestry</h1>
           </div>
           <label class="compact-control" for="ancestry-depth">
             <span>Detail</span>
@@ -145,6 +130,8 @@
         <div class="lineage-grid" id="lineage-grid"></div>
       </section>
 
+      <div class="site-divider" aria-hidden="true"><span></span></div>
+
       <section id="reports" class="section-block" aria-labelledby="reports-heading">
         <div class="section-heading reports-heading">
           <div>
@@ -153,23 +140,16 @@
           </div>
           <p id="report-status" class="result-status" role="status" aria-live="polite"></p>
         </div>
+        <p class="section-note">Choose a report for its interpretation and tested markers.</p>
         <div class="report-controls" aria-label="Report filters">
           <label class="search-control" for="report-search">
             <span>Search</span>
             <input id="report-search" type="search" autocomplete="off" placeholder="Report or result…">
           </label>
-          <label class="compact-control" for="report-category">
-            <span>Category</span>
-            <select id="report-category"><option value="all">All categories</option></select>
-          </label>
+          <div class="report-category-tabs" id="report-category-tabs" role="group" aria-label="Report category"></div>
           <button type="button" class="text-button" id="reset-reports">Reset</button>
         </div>
-        <div class="report-table-scroll" tabindex="0" aria-label="Searchable genetic reports">
-          <table>
-            <thead><tr><th>Report</th><th>Category</th><th>Result</th><th>Markers</th></tr></thead>
-            <tbody id="report-table-body"></tbody>
-          </table>
-        </div>
+        <div class="report-groups" id="report-groups" aria-label="Searchable genetic reports"></div>
         <div class="empty-state" id="report-empty" hidden>
           <h3>No matching reports</h3>
           <p>Try a broader search or another category.</p>
@@ -183,6 +163,8 @@
             <h2 id="privacy-heading">Privacy &amp; method</h2>
           </div>
         </div>
+        <p class="privacy-provenance"><span>Captured</span> <strong id="dataset-date">Loading…</strong> · <span id="dataset-version"></span></p>
+        <p class="privacy-boundary"><strong>Publication boundary.</strong> Interpreted results and report-specific markers are included. Direct identifiers, the raw genome-wide file, relatives, addresses, and account activity are excluded.</p>
         <div class="privacy-grid">
           <div>
             <h3>Included</h3>
@@ -206,7 +188,7 @@
 
     <footer class="site-footer">
       <p>Independent, noncommercial presentation. Not affiliated with or endorsed by 23andMe.</p>
-      <p>Source data remains private; this site contains a deliberately reduced publication dataset.</p>
+      <p><a href="https://jehlp.net/">jehlp.net</a> · Source data remains private.</p>
     </footer>
 
     <dialog id="report-dialog">

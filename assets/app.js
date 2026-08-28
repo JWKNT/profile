@@ -23,6 +23,48 @@
 
   const { meta, ancestry, lineage, reports, privacy } = data;
 
+  const ancestryDisplayColors = Object.freeze({
+    "European": "#5d6874",
+    "Broadly European": "#a9b0b7",
+    "Unassigned": "#ded9cb",
+    "British & Irish": "#2f6fa3",
+    "Broadly British & Irish": "#94b9d5",
+    "English": "#0b4f8a",
+    "Scottish": "#3e84b8",
+    "Irish": "#67a6c7",
+    "Welsh": "#9bc9df",
+    "Western European": "#a96028",
+    "Broadly Western European": "#e2b683",
+    "Austrian & Southern German": "#87401d",
+    "French": "#c45f27",
+    "Swiss, Southwestern German & Western Austrian": "#d47c35",
+    "Dutch & Northern German": "#df9b52",
+    "Belgian, Rhinelander & Southern Dutch": "#ecc078",
+    "Ashkenazi Jewish": "#7b52a3",
+    "Nordic": "#117f7b",
+    "Broadly Nordic": "#8fc9c3",
+    "Swedish": "#075f63",
+    "Norwegian": "#35a19a",
+    "Danish": "#65beb3",
+    "Italian & Maltese": "#b84c4f",
+    "Broadly Italian & Maltese": "#e8aaa1",
+    "Northern Italian": "#96383d",
+    "Southern Italian": "#d56a60",
+    "Sardinian": "#ef9788",
+    "Central & Eastern European": "#4f844e",
+    "Broadly Central & Eastern European": "#aac69e",
+    "Belarusian, Polish & Ukrainian": "#72a761",
+    "Greek & Balkan": "#b88925",
+    "Albanian & Macedonian": "#dfb23f"
+  });
+
+  const ancestryColor = (name) => ancestryDisplayColors[name];
+  const contrastingInk = (hex) => {
+    const channels = hex.slice(1).match(/.{2}/g).map((channel) => parseInt(channel, 16) / 255);
+    const linear = channels.map((value) => value <= .03928 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4);
+    return linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722 > .42 ? "#171816" : "#ffffff";
+  };
+
   $("#dataset-date").textContent = meta.captured;
   $("#dataset-version").textContent = `Ancestry v${meta.ancestryVersion} · chip ${meta.genotypingChip}`;
 
@@ -47,7 +89,7 @@
       if (activeLink && window.matchMedia("(max-width: 620px)").matches) {
         sectionIndex.scrollTo({
           left: activeLink.offsetLeft - (sectionIndex.clientWidth - activeLink.offsetWidth) / 2,
-          behavior: "smooth"
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
         });
       }
     }
@@ -65,20 +107,6 @@
   }));
   updateCurrentSection();
 
-  const metrics = [
-    ["Ancestry", formatPercent(ancestry.total.percent)],
-    ["Reports", meta.counts.reports.toLocaleString()],
-    ["Report markers", meta.counts.testedReportMarkers.toLocaleString()],
-    ["DNA segments", meta.counts.chromosomeSegments.toLocaleString()],
-    ["Neanderthal variants", meta.counts.neanderthalVariants.toLocaleString()]
-  ];
-  const metricList = $("#headline-metrics");
-  metrics.forEach(([label, value]) => {
-    const item = el("div");
-    item.append(el("dt", "", label), el("dd", "", value));
-    metricList.append(item);
-  });
-
   const compositionBar = $("#composition-bar");
   const compositionList = $("#composition-list");
   const ancestryDepth = $("#ancestry-depth");
@@ -93,15 +121,16 @@
     );
 
     rows.forEach((row) => {
+      const color = ancestryColor(row.name);
       const segment = el("span");
       segment.style.width = `${row.percent}%`;
-      segment.style.background = row.color;
+      segment.style.background = color;
       segment.title = `${row.name}: ${formatPercent(row.percent)}`;
       compositionBar.append(segment);
 
       const item = el("li");
       const swatch = el("span", "swatch");
-      swatch.style.setProperty("--swatch", row.color);
+      swatch.style.setProperty("--swatch", color);
       const name = el("span", "composition-name", row.name);
       if (row.group && row.group !== row.name) name.append(el("small", "", row.group));
       item.append(swatch, name, el("strong", "composition-value", formatPercent(row.percent)));
@@ -119,7 +148,7 @@
     item.dataset.overflowSignal = String(index >= 6);
     item.hidden = index >= 6;
     const swatch = el("span", "signal-swatch");
-    swatch.style.setProperty("--swatch", row?.color || "var(--blue)");
+    swatch.style.setProperty("--swatch", ancestryColor(signal.name));
     const copy = el("div");
     copy.append(el("strong", "", signal.name));
     const suffix = signal.additional ? ` · +${signal.additional} regions` : "";
@@ -162,15 +191,18 @@
   const timeline = $("#ancestry-timeline");
   ancestry.timeline.forEach((entry) => {
     const row = el("div", "timeline-row");
-    row.append(el("div", "timeline-label", entry.name));
+    const label = el("div", "timeline-label");
+    label.append(el("span", "", entry.name), el("small", "", `Gen. ${entry.generationRange} · ${entry.estimatedYears.replace(" and ", "–")}`));
+    row.append(label);
     const track = el("div", "timeline-track");
     const range = el("span", "timeline-range");
     const start = Number(entry.startClass.replace("start-", ""));
     const width = Number(entry.widthClass.replace("width-", ""));
     range.style.setProperty("--start", start);
     range.style.setProperty("--width", width);
-    range.style.setProperty("--range", entry.color);
-    range.tabIndex = 0;
+    const color = ancestryColor(entry.name);
+    range.style.setProperty("--range", color);
+    range.style.setProperty("--range-ink", contrastingInk(color));
     range.title = entry.description;
     range.setAttribute("aria-label", `${entry.name}: generations ${entry.generationRange}, between ${entry.estimatedYears}`);
     range.append(el("span", "timeline-range-label", entry.estimatedYears.replace(" and ", "–")));
@@ -194,47 +226,6 @@
   const paintingKey = $("#painting-key");
   const paintingKeySummary = $("#painting-key-summary");
   if (window.matchMedia("(max-width: 620px)").matches) paintingKey.open = false;
-
-  // Display-only palette: 23andMe's source colors cluster heavily in blue.
-  // These colors preserve ancestry families while making every key entry unique.
-  const paintingDisplayColors = Object.freeze({
-    "European": "#5d6874",
-    "Broadly European": "#a9b0b7",
-    "Unassigned": "#ded9cb",
-    "British & Irish": "#2f6fa3",
-    "Broadly British & Irish": "#94b9d5",
-    "English": "#0b4f8a",
-    "Scottish": "#3e84b8",
-    "Irish": "#67a6c7",
-    "Welsh": "#9bc9df",
-    "Western European": "#a96028",
-    "Broadly Western European": "#e2b683",
-    "Austrian & Southern German": "#87401d",
-    "French": "#c45f27",
-    "Swiss, Southwestern German & Western Austrian": "#d47c35",
-    "Dutch & Northern German": "#df9b52",
-    "Belgian, Rhinelander & Southern Dutch": "#ecc078",
-    "Ashkenazi Jewish": "#7b52a3",
-    "Nordic": "#117f7b",
-    "Broadly Nordic": "#8fc9c3",
-    "Swedish": "#075f63",
-    "Norwegian": "#35a19a",
-    "Danish": "#65beb3",
-    "Italian & Maltese": "#b84c4f",
-    "Broadly Italian & Maltese": "#e8aaa1",
-    "Northern Italian": "#96383d",
-    "Southern Italian": "#d56a60",
-    "Sardinian": "#ef9788",
-    "Central & Eastern European": "#4f844e",
-    "Broadly Central & Eastern European": "#aac69e",
-    "Belarusian, Polish & Ukrainian": "#72a761",
-    "Greek & Balkan": "#b88925",
-    "Albanian & Macedonian": "#dfb23f"
-  });
-
-  function paintingColor(segment) {
-    return paintingDisplayColors[segment.name] || segment.color;
-  }
 
   let activeCopy = "both";
   let activePopulation = null;
@@ -293,12 +284,11 @@
         track.hidden = activeCopy !== "both" && activeCopy !== copyName;
         copy.segments.forEach((segment) => {
           const piece = el("span", "segment");
-          const displayColor = paintingColor(segment);
+          const displayColor = ancestryColor(segment.name);
           piece.style.setProperty("--left", `${segment.left}%`);
           piece.style.setProperty("--width", `${segment.width}%`);
           piece.style.setProperty("--segment", displayColor);
           piece.dataset.population = segment.name;
-          piece.tabIndex = 0;
           piece.title = `${segment.name} · chromosome ${chromosome.number}${copyName.toUpperCase()} · ${segment.left.toFixed(2)}–${(segment.left + segment.width).toFixed(2)}%`;
           piece.setAttribute("aria-label", piece.title);
           track.append(piece);
@@ -381,7 +371,6 @@
       lineage.neanderthal.locations.filter((location) => location.chromosome === chromosome && location.copy === copy).forEach((location) => {
         const mark = el("span", "neanderthal-mark");
         mark.style.left = `${location.positionPercent}%`;
-        mark.tabIndex = 0;
         mark.title = `Chromosome ${chromosome}, copy ${copy}, relative position ${location.positionPercent.toFixed(2)}%`;
         mark.setAttribute("aria-label", mark.title);
         track.append(mark);
@@ -417,22 +406,42 @@
   neanderthalDetails.append(traitHeading, markerScroll);
   lineageSection.append(neanderthalDetails);
 
-  const category = $("#report-category");
-  [...new Set(reports.map((report) => report.category))].forEach((name) => {
-    const option = el("option", "", name);
-    option.value = name;
-    category.append(option);
-  });
-
+  const reportCategoryOrder = ["Health Predisposition", "Carrier Status", "Wellness", "Traits"];
+  const reportCategoryLabels = {
+    "Health Predisposition": "Health",
+    "Carrier Status": "Carrier",
+    "Wellness": "Wellness",
+    "Traits": "Traits"
+  };
   const search = $("#report-search");
-  const reportBody = $("#report-table-body");
+  const reportGroups = $("#report-groups");
+  const reportCategoryTabs = $("#report-category-tabs");
   const reportStatus = $("#report-status");
   const reportEmpty = $("#report-empty");
   const dialog = $("#report-dialog");
+  let activeReportCategory = "all";
   const isReportLocked = (report) => report.locked || /tasks required|complete tasks to view/i.test(report.result);
-  const displayResult = (report) => isReportLocked(report)
-    ? "Locked — account task required"
-    : (report.result || "No result text captured");
+  const displayResult = (report) => {
+    if (isReportLocked(report)) return "Locked — account task required";
+    const result = report.result || "No result text captured";
+    return result.toLowerCase().startsWith(`${report.title.toLowerCase()} `)
+      ? result.slice(report.title.length + 1)
+      : result;
+  };
+
+  ["all", ...reportCategoryOrder].forEach((name) => {
+    const count = name === "all" ? reports.length : reports.filter((report) => report.category === name).length;
+    const label = name === "all" ? "All" : reportCategoryLabels[name];
+    const button = el("button", "report-category-tab", `${label} ${count}`);
+    button.type = "button";
+    button.dataset.category = name;
+    button.setAttribute("aria-pressed", String(name === activeReportCategory));
+    button.addEventListener("click", () => {
+      activeReportCategory = name;
+      renderReports();
+    });
+    reportCategoryTabs.append(button);
+  });
 
   function searchableText(report) {
     return [
@@ -499,42 +508,52 @@
 
   function renderReports() {
     const query = search.value.trim().toLowerCase();
-    const selectedCategory = category.value;
     const filtered = reports.filter((report) => {
-      const categoryMatches = selectedCategory === "all" || report.category === selectedCategory;
+      const categoryMatches = activeReportCategory === "all" || report.category === activeReportCategory;
       return categoryMatches && (!query || searchableText(report).includes(query));
     });
 
-    reportBody.replaceChildren();
-    filtered.forEach((report) => {
-      const row = el("tr", "report-row");
-      row.tabIndex = 0;
-      row.setAttribute("role", "button");
-      row.setAttribute("aria-label", `Open ${report.title}: ${displayResult(report)}`);
-      const nameCell = appendTextCell(row, report.title, "report-name");
-      nameCell.append(el("span", "row-action", "View →"));
-      appendTextCell(row, report.category, "report-category");
-      appendTextCell(row, displayResult(report), "report-result");
-      appendTextCell(row, report.variants.length ? report.variants.length.toLocaleString() : "—", "report-markers");
-      row.addEventListener("click", () => openReport(report));
-      row.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          openReport(report);
-        }
+    reportGroups.replaceChildren();
+    reportCategoryOrder.forEach((categoryName) => {
+      const categoryReports = filtered.filter((report) => report.category === categoryName);
+      if (!categoryReports.length) return;
+
+      const section = el("section", "report-group");
+      const heading = el("div", "report-group-heading");
+      heading.append(
+        el("h3", "", categoryName),
+        el("span", "", `${categoryReports.length} ${categoryReports.length === 1 ? "report" : "reports"}`)
+      );
+      const list = el("ul", "report-list");
+      categoryReports.forEach((report) => {
+        const item = el("li");
+        const button = el("button", "report-entry");
+        button.type = "button";
+        button.setAttribute("aria-label", `Open ${report.title}: ${displayResult(report)}`);
+        button.append(
+          el("strong", "report-name", report.title),
+          el("span", "report-result", displayResult(report)),
+          el("span", "report-markers", report.variants.length ? `${report.variants.length.toLocaleString()} markers` : "No marker table")
+        );
+        button.addEventListener("click", () => openReport(report));
+        item.append(button);
+        list.append(item);
       });
-      reportBody.append(row);
+      section.append(heading, list);
+      reportGroups.append(section);
     });
 
     reportStatus.textContent = `${filtered.length.toLocaleString()} of ${reports.length.toLocaleString()} reports`;
     reportEmpty.hidden = filtered.length !== 0;
+    reportCategoryTabs.querySelectorAll("button").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.category === activeReportCategory));
+    });
   }
 
   search.addEventListener("input", renderReports);
-  category.addEventListener("change", renderReports);
   $("#reset-reports").addEventListener("click", () => {
     search.value = "";
-    category.value = "all";
+    activeReportCategory = "all";
     renderReports();
     search.focus();
   });

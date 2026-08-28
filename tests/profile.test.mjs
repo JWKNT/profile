@@ -47,26 +47,38 @@ test("every chromosome confidence view is internally complete", () => {
   Object.values(data.ancestry.paintings).forEach((chromosomes) => assert.equal(chromosomes.length, 24));
 });
 
-test("every chromosome population has a unique display color", () => {
-  const populationNames = new Set(
-    Object.values(data.ancestry.paintings).flatMap((chromosomes) =>
+test("every displayed ancestry population has a unique shared color", () => {
+  const populationNames = new Set([
+    ...data.ancestry.broad.map((row) => row.name),
+    ...data.ancestry.detailed.map((row) => row.name),
+    ...data.ancestry.timeline.map((row) => row.name),
+    ...Object.values(data.ancestry.paintings).flatMap((chromosomes) =>
       chromosomes.flatMap((chromosome) =>
         [chromosome.a, chromosome.b]
           .filter(Boolean)
           .flatMap((copy) => copy.segments.map((segment) => segment.name))
       )
     )
-  );
+  ]);
   const paletteSource = appSource.match(
-    /const paintingDisplayColors = Object\.freeze\(\{([\s\S]*?)\}\);/
+    /const ancestryDisplayColors = Object\.freeze\(\{([\s\S]*?)\}\);/
   )?.[1];
-  assert.ok(paletteSource, "chromosome display palette is declared");
+  assert.ok(paletteSource, "ancestry display palette is declared");
   populationNames.forEach((name) => {
     assert.ok(paletteSource.includes(`"${name}":`), `palette includes ${name}`);
   });
   const colors = [...paletteSource.matchAll(/#[0-9a-f]{6}/gi)].map((match) => match[0].toLowerCase());
   assert.equal(colors.length, populationNames.size);
   assert.equal(new Set(colors).size, populationNames.size);
+});
+
+test("every report separates its title from its result", () => {
+  data.reports.forEach((report) => {
+    assert.ok(report.title.trim(), report.id);
+    assert.ok(report.result.trim(), report.id);
+    assert.ok(!report.result.toLowerCase().startsWith(report.title.toLowerCase()), report.id);
+  });
+  assert.doesNotMatch(serialized, /awful lot of requests|rate.?limit/i);
 });
 
 test("direct identifiers and account routes are absent", () => {
@@ -90,5 +102,17 @@ test("the interactive shell exposes every major captured section", () => {
   assert.match(html, /id="painting-key"/);
   assert.match(html, /id="regional-toggle"/);
   assert.match(html, /report-search/);
+  assert.match(html, /report-category-tabs/);
+  assert.match(html, /report-groups/);
   assert.match(html, /<option value="broad" selected>Broad overview<\/option>/);
+});
+
+test("metadata and keyboard model match the publication surface", () => {
+  assert.match(html, /rel="canonical" href="https:\/\/jehlp\.net\/profile\/"/);
+  assert.match(html, /property="og:url" content="https:\/\/jehlp\.net\/profile\/"/);
+  assert.doesNotMatch(html, /jwknt\.github\.io/i);
+  assert.doesNotMatch(appSource, /piece\.tabIndex\s*=\s*0/);
+  assert.doesNotMatch(appSource, /mark\.tabIndex\s*=\s*0/);
+  assert.doesNotMatch(appSource, /range\.tabIndex\s*=\s*0/);
+  assert.doesNotMatch(appSource, /row\.setAttribute\("role", "button"\)/);
 });
