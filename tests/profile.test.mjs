@@ -72,6 +72,25 @@ test("every displayed ancestry population has a unique shared color", () => {
   assert.equal(new Set(colors).size, populationNames.size);
 });
 
+test("ancestry labels choose readable ink across the full palette", () => {
+  const functionSource = appSource.match(/const contrastingInk = ([\s\S]*?\n  \};)/)?.[1];
+  assert.ok(functionSource, "contrast helper is declared");
+  const functionContext = {};
+  vm.runInNewContext(`ink = ${functionSource}`, functionContext);
+  const colors = [...appSource.matchAll(/"[^"]+":\s*"(#[0-9a-f]{6})"/gi)].map((match) => match[1]);
+  const luminance = (hex) => {
+    const channels = hex.slice(1).match(/.{2}/g).map((channel) => parseInt(channel, 16) / 255);
+    const linear = channels.map((value) => value <= .03928 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4);
+    return linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722;
+  };
+  colors.forEach((background) => {
+    const foreground = functionContext.ink(background);
+    const light = luminance(background);
+    const contrast = foreground === "#000000" ? (light + .05) / .05 : 1.05 / (light + .05);
+    assert.ok(contrast >= 4.5, `${background} has ${contrast.toFixed(2)}:1 contrast`);
+  });
+});
+
 test("every report separates its title from its result", () => {
   data.reports.forEach((report) => {
     assert.ok(report.title.trim(), report.id);
@@ -104,6 +123,9 @@ test("the interactive shell exposes every major captured section", () => {
   assert.match(html, /report-search/);
   assert.match(html, /report-category-tabs/);
   assert.match(html, /report-groups/);
+  assert.match(html, /site-divider site-divider--wide/);
+  assert.match(html, /class="sr-only focus-reveal" href="#privacy">Skip report list/);
+  assert.match(html, /id="report-dialog" aria-labelledby="dialog-title"/);
   assert.match(html, /<option value="broad" selected>Broad overview<\/option>/);
 });
 

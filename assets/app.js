@@ -62,7 +62,10 @@
   const contrastingInk = (hex) => {
     const channels = hex.slice(1).match(/.{2}/g).map((channel) => parseInt(channel, 16) / 255);
     const linear = channels.map((value) => value <= .03928 ? value / 12.92 : ((value + .055) / 1.055) ** 2.4);
-    return linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722 > .42 ? "#171816" : "#ffffff";
+    const luminance = linear[0] * .2126 + linear[1] * .7152 + linear[2] * .0722;
+    const darkContrast = (luminance + .05) / .05;
+    const lightContrast = 1.05 / (luminance + .05);
+    return darkContrast >= lightContrast ? "#000000" : "#ffffff";
   };
 
   $("#dataset-date").textContent = meta.captured;
@@ -115,11 +118,6 @@
     const rows = ancestry[ancestryDepth.value];
     compositionBar.replaceChildren();
     compositionList.replaceChildren();
-    compositionBar.setAttribute(
-      "aria-label",
-      rows.map((row) => `${row.name} ${formatPercent(row.percent)}`).join(", ")
-    );
-
     rows.forEach((row) => {
       const color = ancestryColor(row.name);
       const segment = el("span");
@@ -249,7 +247,7 @@
     paintingLegend.replaceChildren();
     paintingKeySummary.textContent = `Color key · ${palette.size} populations`;
     if (activePopulation && !palette.has(activePopulation)) activePopulation = null;
-    palette.forEach((color, name) => {
+    Object.entries(ancestryDisplayColors).filter(([name]) => palette.has(name)).forEach(([name, color]) => {
       const button = el("button", "legend-button", name);
       button.type = "button";
       button.dataset.population = name;
@@ -280,7 +278,7 @@
         if (!copy) return;
         const track = el("div", `chromosome-copy copy-${copyName}`);
         track.dataset.copy = copyName;
-        track.setAttribute("aria-label", `Chromosome ${chromosome.number}, copy ${copyName.toUpperCase()}`);
+        track.setAttribute("aria-label", `Chromosome ${chromosome.number}, copy ${copyName.toUpperCase()}, ${copy.segments.length} ancestry segments`);
         track.hidden = activeCopy !== "both" && activeCopy !== copyName;
         copy.segments.forEach((segment) => {
           const piece = el("span", "segment");
@@ -290,7 +288,7 @@
           piece.style.setProperty("--segment", displayColor);
           piece.dataset.population = segment.name;
           piece.title = `${segment.name} · chromosome ${chromosome.number}${copyName.toUpperCase()} · ${segment.left.toFixed(2)}–${(segment.left + segment.width).toFixed(2)}%`;
-          piece.setAttribute("aria-label", piece.title);
+          piece.setAttribute("aria-hidden", "true");
           track.append(piece);
           if (!track.hidden) {
             visibleSegments += 1;
@@ -367,12 +365,13 @@
     const tracks = el("div", "neanderthal-tracks");
     ["A", "B"].forEach((copy) => {
       const track = el("div", "neanderthal-track");
-      track.setAttribute("aria-label", `Chromosome ${chromosome}, copy ${copy}`);
-      lineage.neanderthal.locations.filter((location) => location.chromosome === chromosome && location.copy === copy).forEach((location) => {
+      const locations = lineage.neanderthal.locations.filter((location) => location.chromosome === chromosome && location.copy === copy);
+      track.setAttribute("aria-label", `Chromosome ${chromosome}, copy ${copy}, ${locations.length} detected positions`);
+      locations.forEach((location) => {
         const mark = el("span", "neanderthal-mark");
         mark.style.left = `${location.positionPercent}%`;
         mark.title = `Chromosome ${chromosome}, copy ${copy}, relative position ${location.positionPercent.toFixed(2)}%`;
-        mark.setAttribute("aria-label", mark.title);
+        mark.setAttribute("aria-hidden", "true");
         track.append(mark);
       });
       tracks.append(track);
@@ -518,8 +517,9 @@
       const categoryReports = filtered.filter((report) => report.category === categoryName);
       if (!categoryReports.length) return;
 
-      const section = el("section", "report-group");
-      const heading = el("div", "report-group-heading");
+      const section = el("details", "report-group");
+      section.open = Boolean(query || activeReportCategory !== "all" || categoryName === reportCategoryOrder[0]);
+      const heading = el("summary", "report-group-heading");
       heading.append(
         el("h3", "", categoryName),
         el("span", "", `${categoryReports.length} ${categoryReports.length === 1 ? "report" : "reports"}`)
@@ -530,11 +530,9 @@
         const button = el("button", "report-entry");
         button.type = "button";
         button.setAttribute("aria-label", `Open ${report.title}: ${displayResult(report)}`);
-        button.append(
-          el("strong", "report-name", report.title),
-          el("span", "report-result", displayResult(report)),
-          el("span", "report-markers", report.variants.length ? `${report.variants.length.toLocaleString()} markers` : "No marker table")
-        );
+        const markerCount = el("span", "report-markers", report.variants.length ? `${report.variants.length.toLocaleString()} markers` : "—");
+        if (!report.variants.length) markerCount.setAttribute("aria-label", "No marker table");
+        button.append(el("strong", "report-name", report.title), el("span", "report-result", displayResult(report)), markerCount);
         button.addEventListener("click", () => openReport(report));
         item.append(button);
         list.append(item);
@@ -543,7 +541,7 @@
       reportGroups.append(section);
     });
 
-    reportStatus.textContent = `${filtered.length.toLocaleString()} of ${reports.length.toLocaleString()} reports`;
+    reportStatus.textContent = query || activeReportCategory !== "all" ? `${filtered.length.toLocaleString()} of ${reports.length.toLocaleString()} reports` : "";
     reportEmpty.hidden = filtered.length !== 0;
     reportCategoryTabs.querySelectorAll("button").forEach((button) => {
       button.setAttribute("aria-pressed", String(button.dataset.category === activeReportCategory));

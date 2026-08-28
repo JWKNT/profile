@@ -56,7 +56,7 @@
             </select>
           </label>
         </div>
-        <div class="composition-bar" id="composition-bar" role="img" aria-label="Ancestry composition"></div>
+        <div class="composition-bar" id="composition-bar" aria-hidden="true"></div>
         <div class="ancestry-layout">
           <ol class="composition-list" id="composition-list"></ol>
           <div class="regional-notes">
@@ -130,7 +130,7 @@
         <div class="lineage-grid" id="lineage-grid"></div>
       </section>
 
-      <div class="site-divider" aria-hidden="true"><span></span></div>
+      <div class="site-divider site-divider--wide" data-ornament="helix" aria-hidden="true"><span></span></div>
 
       <section id="reports" class="section-block" aria-labelledby="reports-heading">
         <div class="section-heading reports-heading">
@@ -149,6 +149,7 @@
           <div class="report-category-tabs" id="report-category-tabs" role="group" aria-label="Report category"></div>
           <button type="button" class="text-button" id="reset-reports">Reset</button>
         </div>
+        <a class="sr-only focus-reveal" href="#privacy">Skip report list</a>
         <div class="report-groups" id="report-groups" aria-label="Searchable genetic reports"></div>
         <div class="empty-state" id="report-empty" hidden>
           <h3>No matching reports</h3>
@@ -191,7 +192,7 @@
       <p><a href="https://jehlp.net/">jehlp.net</a> · Source data remains private.</p>
     </footer>
 
-    <dialog id="report-dialog">
+    <dialog id="report-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-result dialog-description">
       <div class="dialog-shell">
         <button type="button" class="dialog-close" id="dialog-close" aria-label="Close report details">×</button>
         <p class="dialog-kicker" id="dialog-category"></p>
