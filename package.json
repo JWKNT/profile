@@ -1,0 +1,9 @@
+{
+  "name": "genetic-profile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "An anonymized interactive presentation of consumer-genetics results.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

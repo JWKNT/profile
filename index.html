@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An anonymized, interactive exploration of one 23andMe dataset.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Genetic Profile">
+    <meta property="og:description" content="An anonymized, interactive exploration of ancestry, lineage, health, wellness, and traits.">
+    <meta property="og:url" content="https://jwknt.github.io/profile/">
+    <meta name="twitter:card" content="summary">
+    <meta name="theme-color" content="#ffffff">
+    <title>Genetic Profile</title>
+    <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+    <script src="https://jehlp.net/site-theme/v1/theme.js"></script>
+    <link rel="stylesheet" href="https://jehlp.net/site-theme/v1/base.css">
+    <link rel="stylesheet" href="assets/styles.css">
+    <script src="data/profile-data.js" defer></script>
+    <script src="assets/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#profile">Skip to profile</a>
+
+    <header class="site-header">
+      <a class="site-title" href="./">Genetic Profile</a>
+      <nav aria-label="Site links">
+        <a href="#ancestry" aria-current="page">Explore</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/JWKNT/profile">Source</a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Use dark theme">◐</button>
+      </nav>
+    </header>
+
+    <main id="profile" class="profile-shell">
+      <section class="profile-intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Anonymized personal dataset</p>
+          <h1 id="page-title">A genome, in broad strokes</h1>
+          <p class="intro-copy">An interactive view of consumer-genetics results, published without direct account identifiers, relatives, or a raw genome-wide genotype file.</p>
+        </div>
+        <p class="data-stamp"><span>Dataset</span><strong id="dataset-date">Loading…</strong><small id="dataset-version"></small></p>
+      </section>
+
+      <aside class="privacy-notice" aria-labelledby="privacy-notice-title">
+        <strong id="privacy-notice-title">Privacy boundary</strong>
+        <p>Interpreted results and the markers disclosed inside those reports appear here. Direct identifiers, the raw genome-wide file, relatives, addresses, and account activity are excluded.</p>
+      </aside>
+
+      <dl class="headline-metrics" id="headline-metrics" aria-label="Profile summary"></dl>
+
+      <nav class="section-index" aria-label="Profile sections">
+        <a href="#ancestry">Ancestry</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#chromosomes">Chromosomes</a>
+        <a href="#lineage">Lineage</a>
+        <a href="#reports">Reports</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
+
+      <section id="ancestry" class="section-block" aria-labelledby="ancestry-heading">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Composition estimate</p>
+            <h2 id="ancestry-heading">Ancestry</h2>
+          </div>
+          <label class="compact-control" for="ancestry-depth">
+            <span>Detail</span>
+            <select id="ancestry-depth">
+              <option value="broad">Broad</option>
+              <option value="detailed" selected>Detailed</option>
+            </select>
+          </label>
+        </div>
+        <div class="composition-bar" id="composition-bar" role="img" aria-label="Ancestry composition"></div>
+        <div class="ancestry-layout">
+          <ol class="composition-list" id="composition-list"></ol>
+          <div class="regional-notes">
+            <h3>Regional signals</h3>
+            <div id="regional-signals" class="regional-signal-list"></div>
+          </div>
+        </div>
+        <details class="version-history">
+          <summary>Compare Ancestry Composition v7.0 with v6.0</summary>
+          <div class="report-table-scroll version-table-scroll" tabindex="0" aria-label="Ancestry version comparison">
+            <table>
+              <thead><tr><th>Population</th><th>v7.0</th><th>v6.0</th><th>Change</th><th>Note</th></tr></thead>
+              <tbody id="version-table-body"></tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+
+      <section id="timeline" class="section-block" aria-labelledby="timeline-heading">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Estimated generations</p>
+            <h2 id="timeline-heading">Ancestry timeline</h2>
+          </div>
+        </div>
+        <p class="section-note">These ranges estimate when the most recent ancestor who was 100% from each population may have lived. They are probabilistic, not a family tree.</p>
+        <div class="timeline-key" id="timeline-key" aria-hidden="true"></div>
+        <div class="ancestry-timeline" id="ancestry-timeline"></div>
+      </section>
+
+      <section id="chromosomes" class="section-block" aria-labelledby="chromosomes-heading">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Chromosome painting</p>
+            <h2 id="chromosomes-heading">Ancestry by segment</h2>
+          </div>
+          <div class="chromosome-controls">
+            <label class="compact-control" for="painting-confidence">
+              <span>Confidence</span>
+              <select id="painting-confidence"></select>
+            </label>
+            <div class="segmentation-controls" role="group" aria-label="Chromosome copies">
+              <button type="button" data-haplotype="both" aria-pressed="true">Both</button>
+              <button type="button" data-haplotype="a" aria-pressed="false">Copy A</button>
+              <button type="button" data-haplotype="b" aria-pressed="false">Copy B</button>
+            </div>
+          </div>
+        </div>
+        <p class="section-note">Switch among all six captured confidence views. Copies are labeled A and B because this result did not expose a maternal/paternal assignment.</p>
+        <div class="chromosome-plot" id="chromosome-plot" aria-label="Chromosome ancestry segments"></div>
+        <p class="plot-status" id="plot-status" role="status" aria-live="polite"></p>
+      </section>
+
+      <section id="lineage" class="section-block" aria-labelledby="lineage-heading">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Deep ancestry</p>
+            <h2 id="lineage-heading">Lineage</h2>
+          </div>
+        </div>
+        <div class="lineage-grid" id="lineage-grid"></div>
+      </section>
+
+      <section id="reports" class="section-block" aria-labelledby="reports-heading">
+        <div class="section-heading reports-heading">
+          <div>
+            <p class="section-kicker">Interpreted results</p>
+            <h2 id="reports-heading">Reports</h2>
+          </div>
+          <p id="report-status" class="result-status" role="status" aria-live="polite"></p>
+        </div>
+        <div class="report-controls" aria-label="Report filters">
+          <label class="search-control" for="report-search">
+            <span>Search</span>
+            <input id="report-search" type="search" autocomplete="off" placeholder="Report or result…">
+          </label>
+          <label class="compact-control" for="report-category">
+            <span>Category</span>
+            <select id="report-category"><option value="all">All categories</option></select>
+          </label>
+          <button type="button" class="text-button" id="reset-reports">Reset</button>
+        </div>
+        <div class="report-table-scroll" tabindex="0" aria-label="Searchable genetic reports">
+          <table>
+            <thead><tr><th>Report</th><th>Category</th><th>Result</th><th>Markers</th></tr></thead>
+            <tbody id="report-table-body"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="report-empty" hidden>
+          <h3>No matching reports</h3>
+          <p>Try a broader search or another category.</p>
+        </div>
+      </section>
+
+      <section id="privacy" class="section-block privacy-section" aria-labelledby="privacy-heading">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Publication audit</p>
+            <h2 id="privacy-heading">Privacy &amp; method</h2>
+          </div>
+        </div>
+        <div class="privacy-grid">
+          <div>
+            <h3>Included</h3>
+            <ul id="included-list"></ul>
+          </div>
+          <div>
+            <h3>Removed</h3>
+            <ul id="removed-list"></ul>
+          </div>
+          <div>
+            <h3>Interpretation</h3>
+            <p>This is a consumer-genetics snapshot, not a diagnostic record. Estimates can change as reference populations and interpretation methods are updated.</p>
+          </div>
+        </div>
+        <details>
+          <summary>Processing notes <span id="processing-count"></span></summary>
+          <ol class="processing-notes" id="processing-notes"></ol>
+        </details>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Independent, noncommercial presentation. Not affiliated with or endorsed by 23andMe.</p>
+      <p>Source data remains private; this site contains a deliberately reduced publication dataset.</p>
+    </footer>
+
+    <dialog id="report-dialog">
+      <div class="dialog-shell">
+        <button type="button" class="dialog-close" id="dialog-close" aria-label="Close report details">×</button>
+        <p class="dialog-kicker" id="dialog-category"></p>
+        <h2 id="dialog-title"></h2>
+        <p class="dialog-result" id="dialog-result"></p>
+        <p id="dialog-description"></p>
+        <div class="dialog-notes" id="dialog-notes"></div>
+        <dl class="dialog-facts" id="dialog-facts"></dl>
+        <div class="dialog-variants" id="dialog-variants"></div>
+        <button type="button" class="text-button" id="dialog-done">Done</button>
+      </div>
+    </dialog>
+
+    <noscript><p class="noscript">This profile requires JavaScript to render the anonymized dataset.</p></noscript>
+  </body>
+</html>
