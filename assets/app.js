@@ -194,6 +194,48 @@
   const paintingKey = $("#painting-key");
   const paintingKeySummary = $("#painting-key-summary");
   if (window.matchMedia("(max-width: 620px)").matches) paintingKey.open = false;
+
+  // Display-only palette: 23andMe's source colors cluster heavily in blue.
+  // These colors preserve ancestry families while making every key entry unique.
+  const paintingDisplayColors = Object.freeze({
+    "European": "#5d6874",
+    "Broadly European": "#a9b0b7",
+    "Unassigned": "#ded9cb",
+    "British & Irish": "#2f6fa3",
+    "Broadly British & Irish": "#94b9d5",
+    "English": "#0b4f8a",
+    "Scottish": "#3e84b8",
+    "Irish": "#67a6c7",
+    "Welsh": "#9bc9df",
+    "Western European": "#a96028",
+    "Broadly Western European": "#e2b683",
+    "Austrian & Southern German": "#87401d",
+    "French": "#c45f27",
+    "Swiss, Southwestern German & Western Austrian": "#d47c35",
+    "Dutch & Northern German": "#df9b52",
+    "Belgian, Rhinelander & Southern Dutch": "#ecc078",
+    "Ashkenazi Jewish": "#7b52a3",
+    "Nordic": "#117f7b",
+    "Broadly Nordic": "#8fc9c3",
+    "Swedish": "#075f63",
+    "Norwegian": "#35a19a",
+    "Danish": "#65beb3",
+    "Italian & Maltese": "#b84c4f",
+    "Broadly Italian & Maltese": "#e8aaa1",
+    "Northern Italian": "#96383d",
+    "Southern Italian": "#d56a60",
+    "Sardinian": "#ef9788",
+    "Central & Eastern European": "#4f844e",
+    "Broadly Central & Eastern European": "#aac69e",
+    "Belarusian, Polish & Ukrainian": "#72a761",
+    "Greek & Balkan": "#b88925",
+    "Albanian & Macedonian": "#dfb23f"
+  });
+
+  function paintingColor(segment) {
+    return paintingDisplayColors[segment.name] || segment.color;
+  }
+
   let activeCopy = "both";
   let activePopulation = null;
   let displayedSegmentCount = 0;
@@ -251,9 +293,10 @@
         track.hidden = activeCopy !== "both" && activeCopy !== copyName;
         copy.segments.forEach((segment) => {
           const piece = el("span", "segment");
+          const displayColor = paintingColor(segment);
           piece.style.setProperty("--left", `${segment.left}%`);
           piece.style.setProperty("--width", `${segment.width}%`);
-          piece.style.setProperty("--segment", segment.color);
+          piece.style.setProperty("--segment", displayColor);
           piece.dataset.population = segment.name;
           piece.tabIndex = 0;
           piece.title = `${segment.name} · chromosome ${chromosome.number}${copyName.toUpperCase()} · ${segment.left.toFixed(2)}–${(segment.left + segment.width).toFixed(2)}%`;
@@ -261,7 +304,7 @@
           track.append(piece);
           if (!track.hidden) {
             visibleSegments += 1;
-            if (!palette.has(segment.name)) palette.set(segment.name, segment.color);
+            if (!palette.has(segment.name)) palette.set(segment.name, displayColor);
           }
         });
         const centromere = el("span", "centromere");

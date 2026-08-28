@@ -504,11 +504,14 @@ main .legend-button {
 
 .legend-button::before {
   display: inline-block;
-  width: 7px;
-  height: 7px;
-  margin-right: 5px;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border: 1px solid rgb(20 27 35 / 22%);
+  border-radius: 2px;
   background: var(--legend);
   content: "";
+  vertical-align: -1px;
 }
 
 main .legend-button:hover,
@@ -557,6 +560,7 @@ main .legend-button[aria-pressed="true"] {
   width: max(var(--width), 1px);
   border: 0;
   background: var(--segment);
+  box-shadow: inset -1px 0 rgb(255 255 255 / 18%);
 }
 
 .segment.is-muted {

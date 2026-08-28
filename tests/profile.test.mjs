@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const appSource = fs.readFileSync(path.join(root, "assets/app.js"), "utf8");
 const dataSource = fs.readFileSync(path.join(root, "data/profile-data.js"), "utf8");
 const context = { window: {} };
 vm.runInNewContext(dataSource, context);
@@ -44,6 +45,28 @@ test("every chromosome confidence view is internally complete", () => {
   );
   assert.equal(segmentCount, 2415);
   Object.values(data.ancestry.paintings).forEach((chromosomes) => assert.equal(chromosomes.length, 24));
+});
+
+test("every chromosome population has a unique display color", () => {
+  const populationNames = new Set(
+    Object.values(data.ancestry.paintings).flatMap((chromosomes) =>
+      chromosomes.flatMap((chromosome) =>
+        [chromosome.a, chromosome.b]
+          .filter(Boolean)
+          .flatMap((copy) => copy.segments.map((segment) => segment.name))
+      )
+    )
+  );
+  const paletteSource = appSource.match(
+    /const paintingDisplayColors = Object\.freeze\(\{([\s\S]*?)\}\);/
+  )?.[1];
+  assert.ok(paletteSource, "chromosome display palette is declared");
+  populationNames.forEach((name) => {
+    assert.ok(paletteSource.includes(`"${name}":`), `palette includes ${name}`);
+  });
+  const colors = [...paletteSource.matchAll(/#[0-9a-f]{6}/gi)].map((match) => match[0].toLowerCase());
+  assert.equal(colors.length, populationNames.size);
+  assert.equal(new Set(colors).size, populationNames.size);
 });
 
 test("direct identifiers and account routes are absent", () => {
