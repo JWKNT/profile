@@ -343,7 +343,7 @@
   neanderthalDetails.append(neanderthalMap);
 
   const traitHeading = el("h3", "marker-heading", "Tested Neanderthal trait markers");
-  const markerTable = el("table", "marker-table");
+  const markerTable = el("table", "ui-table marker-table");
   const markerHead = el("thead");
   const markerHeadRow = el("tr");
   ["Marker", "Trait", "Genotype", "Neanderthal variant", "Association"].forEach((heading) => markerHeadRow.append(el("th", "", heading)));
@@ -443,7 +443,7 @@
     const variants = $("#dialog-variants");
     variants.replaceChildren();
     if (report.variants.length) {
-      const table = el("table", "marker-table");
+      const table = el("table", "ui-table marker-table");
       const head = el("thead");
       const headRow = el("tr");
       ["Variant", "Gene", "Marker", "Genotype", "Status"].forEach((heading) => headRow.append(el("th", "", heading)));
