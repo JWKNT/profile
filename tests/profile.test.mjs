@@ -133,6 +133,7 @@ test("metadata and keyboard model match the publication surface", () => {
   assert.match(html, /rel="canonical" href="https:\/\/jehlp\.net\/profile\/"/);
   assert.match(html, /property="og:url" content="https:\/\/jehlp\.net\/profile\/"/);
   assert.doesNotMatch(html, /jwknt\.github\.io/i);
+  assert.doesNotMatch(html, /<a\b[^>]*href="(?:https:\/\/jehlp\.net\/|\/)"/);
   assert.doesNotMatch(appSource, /piece\.tabIndex\s*=\s*0/);
   assert.doesNotMatch(appSource, /mark\.tabIndex\s*=\s*0/);
   assert.doesNotMatch(appSource, /range\.tabIndex\s*=\s*0/);

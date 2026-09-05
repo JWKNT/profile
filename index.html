@@ -22,14 +22,12 @@
     <script src="data/profile-data.js" defer></script>
     <script src="assets/app.js" defer></script>
   </head>
-  <body>
+  <body data-site-tone="plum">
     <a class="skip-link" href="#profile">Skip to profile</a>
 
-    <header class="site-header">
-      <a class="site-title" href="./">Genetic Profile</a>
-      <nav aria-label="Site links">
-        <a href="https://jehlp.net/">Projects</a>
-        <a href="#privacy">Privacy</a>
+    <header class="site-header site-header--identity">
+      <div class="site-brand"><span class="site-mark" aria-hidden="true">⋈</span><a class="site-title" href="./">Genetic Profile</a></div>
+      <nav aria-label="Page settings">
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Use dark theme">◐</button>
       </nav>
     </header>
@@ -46,9 +44,9 @@
 
       <section id="ancestry" class="section-block" aria-labelledby="ancestry-heading">
         <div class="section-heading">
-          <div>
-            <p class="section-kicker">Composition estimate</p>
-            <h1 id="ancestry-heading">Ancestry</h1>
+          <div class="section-title-group">
+            <span class="section-number" aria-hidden="true">01</span>
+            <h1 id="ancestry-heading">Ancestry estimates</h1>
           </div>
           <label class="compact-control" for="ancestry-depth">
             <span>Detail</span>
@@ -65,7 +63,6 @@
             <div class="subsection-heading">
               <div>
                 <h3>Regional signals</h3>
-                <p>Locations with the strongest matches</p>
               </div>
               <button type="button" class="text-button" id="regional-toggle" aria-expanded="false"></button>
             </div>
@@ -73,7 +70,7 @@
           </div>
         </div>
         <details class="version-history">
-          <summary>Compare Ancestry Composition v7.0 with v6.0</summary>
+          <summary>Compare v7.0 / v6.0</summary>
           <div class="report-table-scroll version-table-scroll" data-scroll-region tabindex="0" aria-label="Ancestry version comparison">
             <table>
               <thead><tr><th>Population</th><th>v7.0</th><th>v6.0</th><th>Change</th><th>Note</th></tr></thead>
@@ -85,8 +82,8 @@
 
       <section id="timeline" class="section-block" aria-labelledby="timeline-heading">
         <div class="section-heading">
-          <div>
-            <p class="section-kicker">Estimated generations</p>
+          <div class="section-title-group">
+            <span class="section-number" aria-hidden="true">02</span>
             <h2 id="timeline-heading">Ancestry timeline</h2>
           </div>
         </div>
@@ -97,8 +94,8 @@
 
       <section id="chromosomes" class="section-block" aria-labelledby="chromosomes-heading">
         <div class="section-heading">
-          <div>
-            <p class="section-kicker">Chromosome painting</p>
+          <div class="section-title-group">
+            <span class="section-number" aria-hidden="true">03</span>
             <h2 id="chromosomes-heading">Ancestry by segment</h2>
           </div>
           <div class="chromosome-controls">
@@ -113,7 +110,7 @@
             </div>
           </div>
         </div>
-        <p class="section-note">Switch among all six captured confidence views. Copies are labeled A and B because this result did not expose a maternal/paternal assignment.</p>
+        <p class="section-note">Copies are labeled A and B because this result did not expose a maternal/paternal assignment.</p>
         <details class="painting-key" id="painting-key" open>
           <summary id="painting-key-summary">Color key</summary>
           <div class="painting-legend" id="painting-legend" aria-label="Chromosome painting color key"></div>
@@ -124,8 +121,8 @@
 
       <section id="lineage" class="section-block" aria-labelledby="lineage-heading">
         <div class="section-heading">
-          <div>
-            <p class="section-kicker">Deep ancestry</p>
+          <div class="section-title-group">
+            <span class="section-number" aria-hidden="true">04</span>
             <h2 id="lineage-heading">Lineage</h2>
           </div>
         </div>
@@ -136,13 +133,12 @@
 
       <section id="reports" class="section-block" aria-labelledby="reports-heading">
         <div class="section-heading reports-heading">
-          <div>
-            <p class="section-kicker">Interpreted results</p>
+          <div class="section-title-group">
+            <span class="section-number" aria-hidden="true">05</span>
             <h2 id="reports-heading">Reports</h2>
           </div>
           <p id="report-status" class="result-status" role="status" aria-live="polite"></p>
         </div>
-        <p class="section-note">Choose a report for its interpretation and tested markers.</p>
         <div class="report-controls" aria-label="Report filters">
           <label class="search-control" for="report-search">
             <span>Search</span>
@@ -161,8 +157,8 @@
 
       <section id="privacy" class="section-block privacy-section" aria-labelledby="privacy-heading">
         <div class="section-heading">
-          <div>
-            <p class="section-kicker">Publication audit</p>
+          <div class="section-title-group">
+            <span class="section-number" aria-hidden="true">06</span>
             <h2 id="privacy-heading">Privacy &amp; method</h2>
           </div>
         </div>
@@ -190,8 +186,8 @@
     </main>
 
     <footer class="site-footer">
-      <p>Independent, noncommercial presentation. Not affiliated with or endorsed by 23andMe.</p>
-      <p><a href="https://jehlp.net/">jehlp.net</a> · Source data remains private.</p>
+      <p>Independent &amp; noncommercial. Not affiliated with or endorsed by 23andMe.</p>
+      <p>jehlp.net · Source data remains private.</p>
     </footer>
 
     <dialog class="ui-dialog" data-dialog id="report-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-result dialog-description">
