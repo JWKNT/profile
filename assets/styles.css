@@ -1,6 +1,6 @@
 body {
   padding-bottom: 48px;
-  font-size: 15px;
+  font-size: 1rem;
   line-height: 1.5;
 }
 
@@ -24,7 +24,7 @@ body {
 .dialog-kicker {
   margin: 0 0 4px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-meta, .75rem);
   font-variant: small-caps;
   letter-spacing: .55px;
 }
@@ -46,7 +46,7 @@ p {
   padding: 12px 0;
   border-bottom: 1px solid var(--line);
   background: var(--paper);
-  font-size: 11px;
+  font-size: var(--text-ui, .875rem);
   font-variant: small-caps;
   letter-spacing: .35px;
 }
@@ -120,13 +120,13 @@ input[type="search"],
 select,
 main button,
 dialog button {
-  min-height: 32px;
+  min-height: var(--control-size, 2.25rem);
   padding: 5px 9px;
   border: 1px solid var(--line-strong);
   border-radius: 0;
   background: var(--paper);
   color: var(--ink);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 main button,
@@ -158,7 +158,7 @@ dialog button:focus-visible {
   display: grid;
   gap: 3px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--text-ui, .875rem);
   font-variant: small-caps;
   letter-spacing: .35px;
 }
@@ -212,7 +212,7 @@ dialog button:focus-visible {
 .composition-name small {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-meta, .75rem);
 }
 
 .composition-value {
@@ -222,7 +222,7 @@ dialog button:focus-visible {
 .regional-notes h3,
 .privacy-grid h3 {
   margin: 0 0 9px;
-  font-size: 15px;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -242,7 +242,7 @@ dialog button:focus-visible {
 .subsection-heading p {
   margin: 2px 0 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-meta, .75rem);
 }
 
 .subsection-heading .text-button {
@@ -278,7 +278,7 @@ dialog button:focus-visible {
 .version-history summary {
   cursor: pointer;
   color: var(--blue);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 .version-table-scroll {
@@ -396,7 +396,7 @@ dialog button:focus-visible {
 .painting-key summary {
   cursor: pointer;
   color: var(--blue);
-  font-size: 10px;
+  font-size: var(--text-meta, .75rem);
   font-variant: small-caps;
   letter-spacing: .35px;
 }
@@ -410,11 +410,11 @@ dialog button:focus-visible {
 }
 
 main .legend-button {
-  min-height: 24px;
-  padding: 2px 6px;
+  min-height: var(--control-size, 2.25rem);
+  padding: 5px 7px;
   border-color: transparent;
   color: var(--muted-strong);
-  font-size: 10px;
+  font-size: var(--text-ui, .875rem);
   font-variant: normal;
   letter-spacing: 0;
   text-transform: none;
@@ -449,7 +449,7 @@ main .legend-button[aria-pressed="true"] {
 
 .chromosome-number {
   color: var(--muted);
-  font: 10px/1 var(--mono);
+  font: var(--text-meta, .75rem)/1 var(--mono);
   text-align: right;
 }
 
@@ -537,7 +537,7 @@ main .legend-button[aria-pressed="true"] {
 .lineage-card p {
   margin: 8px 0;
   color: var(--muted-strong);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 .lineage-facts {
@@ -545,7 +545,7 @@ main .legend-button[aria-pressed="true"] {
   grid-template-columns: 92px minmax(0, 1fr);
   gap: 5px 10px;
   margin: 12px 0 0;
-  font-size: 11px;
+  font-size: var(--text-meta, .75rem);
 }
 
 .lineage-facts dt {
@@ -569,7 +569,7 @@ main .legend-button[aria-pressed="true"] {
   padding-block: 8px;
   cursor: pointer;
   color: var(--blue);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
   list-style: none;
 }
 
@@ -629,7 +629,7 @@ main .legend-button[aria-pressed="true"] {
 
 .marker-heading {
   margin: 0 0 8px;
-  font-size: 15px;
+  font-size: 1rem;
   font-weight: 500;
 }
 
@@ -641,7 +641,7 @@ main .legend-button[aria-pressed="true"] {
   width: 100%;
   margin-top: 12px;
   border-collapse: collapse;
-  font-size: 11px;
+  font-size: var(--text-meta, .75rem);
 }
 
 .marker-table th,
@@ -653,7 +653,7 @@ main .legend-button[aria-pressed="true"] {
 
 .marker-table th {
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--text-ui, .875rem);
   font-variant: small-caps;
   font-weight: 500;
   letter-spacing: .35px;
@@ -695,9 +695,9 @@ main .legend-button[aria-pressed="true"] {
 }
 
 main .report-category-tab {
-  min-height: 32px;
+  min-height: var(--control-size, 2.25rem);
   color: var(--muted-strong);
-  font: 10px/1.3 var(--sans);
+  font: var(--text-ui, .875rem)/1.3 var(--sans);
   font-variant-numeric: tabular-nums;
 }
 
@@ -745,7 +745,7 @@ main .report-category-tab {
 
 .report-group-heading h3 {
   margin: 0;
-  font-size: 15px;
+  font-size: 1rem;
   font-variant: small-caps;
   font-weight: 600;
   letter-spacing: .35px;
@@ -754,7 +754,7 @@ main .report-category-tab {
 .report-group-heading span {
   margin-left: auto;
   color: var(--muted);
-  font: 10px/1.3 var(--mono);
+  font: var(--text-meta, .75rem)/1.3 var(--mono);
 }
 
 .report-list {
@@ -796,19 +796,19 @@ main .report-entry:focus-visible {
 
 .report-name {
   font-family: var(--serif);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
   font-weight: 600;
 }
 
 .report-result {
   color: var(--muted-strong);
   font-family: var(--serif);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 .report-markers {
   color: var(--muted);
-  font: 9px/1.35 var(--mono);
+  font: var(--text-meta, .75rem)/1.35 var(--mono);
   text-align: right;
 }
 
@@ -840,7 +840,7 @@ td {
 
 th {
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--text-ui, .875rem);
   font-variant: small-caps;
   font-weight: 500;
   letter-spacing: .4px;
@@ -858,7 +858,7 @@ th {
 .privacy-provenance {
   margin: -8px 0 14px;
   color: var(--muted);
-  font: 10px/1.45 var(--mono);
+  font: var(--text-meta, .75rem)/1.45 var(--mono);
 }
 
 .privacy-provenance strong {
@@ -872,7 +872,7 @@ th {
   padding-left: 12px;
   border-left: 2px solid var(--blue);
   color: var(--muted-strong);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 .privacy-grid {
@@ -885,7 +885,7 @@ th {
   margin: 0;
   padding-left: 18px;
   color: var(--muted-strong);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 .privacy-grid li + li {
@@ -895,14 +895,14 @@ th {
 .privacy-grid p {
   margin: 0;
   color: var(--muted-strong);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 .privacy-section details {
   margin-top: 24px;
   padding-top: 12px;
   border-top: 1px solid var(--line);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 .privacy-section summary {
@@ -921,7 +921,7 @@ th {
   gap: 30px;
   padding: 17px 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-meta, .75rem);
 }
 
 .site-footer p {
@@ -973,7 +973,7 @@ dialog::backdrop {
 #dialog-description {
   margin-bottom: 16px;
   color: var(--muted-strong);
-  font-size: 13px;
+  font-size: var(--text-ui, .875rem);
   line-height: 1.55;
 }
 
@@ -982,7 +982,7 @@ dialog::backdrop {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   color: var(--muted-strong);
-  font-size: 12px;
+  font-size: var(--text-ui, .875rem);
 }
 
 .dialog-notes summary {
@@ -1000,7 +1000,7 @@ dialog::backdrop {
   grid-template-columns: auto 1fr;
   gap: 4px 12px;
   margin: 14px 0;
-  font-size: 11px;
+  font-size: var(--text-meta, .75rem);
 }
 
 .dialog-facts dt {
