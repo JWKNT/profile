@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="https://jehlp.net/site-theme/v2/base.css">
     <link rel="stylesheet" href="https://jehlp.net/site-theme/v2/components.css">
     <script src="https://jehlp.net/site-theme/v2/components.js" defer></script>
-    <link rel="stylesheet" href="assets/styles.css?v=20260905-tables">
+    <link rel="stylesheet" href="assets/styles.css?v=20260905-specifics">
     <script src="data/profile-data.js" defer></script>
     <script src="assets/app.js?v=20260905-tables" defer></script>
   </head>
@@ -26,7 +26,7 @@
     <a class="skip-link" href="#profile">Skip to profile</a>
 
     <header class="site-header site-header--identity">
-      <div class="site-brand"><span class="site-mark" aria-hidden="true">⋈</span><a class="site-title" href="./">Genetic Profile</a></div>
+      <div class="site-brand"><img class="site-mark" src="https://jehlp.net/site-theme/v2/marks/profile.png" width="32" height="32" alt=""><a class="site-title" href="./">Genetic Profile</a></div>
       <nav aria-label="Page settings">
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Use dark theme">◐</button>
       </nav>
@@ -45,12 +45,11 @@
       <section id="ancestry" class="section-block" aria-labelledby="ancestry-heading">
         <div class="section-heading">
           <div class="section-title-group">
-            <span class="section-number" aria-hidden="true">01</span>
             <h1 id="ancestry-heading">Ancestry estimates</h1>
           </div>
           <label class="compact-control" for="ancestry-depth">
             <span>Detail</span>
-            <select id="ancestry-depth">
+            <select id="ancestry-depth" data-ui-select>
               <option value="broad" selected>Broad overview</option>
               <option value="detailed">Detailed populations</option>
             </select>
@@ -83,7 +82,6 @@
       <section id="timeline" class="section-block" aria-labelledby="timeline-heading">
         <div class="section-heading">
           <div class="section-title-group">
-            <span class="section-number" aria-hidden="true">02</span>
             <h2 id="timeline-heading">Ancestry timeline</h2>
           </div>
         </div>
@@ -95,13 +93,12 @@
       <section id="chromosomes" class="section-block" aria-labelledby="chromosomes-heading">
         <div class="section-heading">
           <div class="section-title-group">
-            <span class="section-number" aria-hidden="true">03</span>
             <h2 id="chromosomes-heading">Ancestry by segment</h2>
           </div>
           <div class="chromosome-controls">
             <label class="compact-control" for="painting-confidence">
               <span>Confidence</span>
-              <select id="painting-confidence"></select>
+              <select id="painting-confidence" data-ui-select></select>
             </label>
             <div class="segmentation-controls" role="group" aria-label="Chromosome copies">
               <button type="button" data-haplotype="both" aria-pressed="true">Both</button>
@@ -122,7 +119,6 @@
       <section id="lineage" class="section-block" aria-labelledby="lineage-heading">
         <div class="section-heading">
           <div class="section-title-group">
-            <span class="section-number" aria-hidden="true">04</span>
             <h2 id="lineage-heading">Lineage</h2>
           </div>
         </div>
@@ -134,7 +130,6 @@
       <section id="reports" class="section-block" aria-labelledby="reports-heading">
         <div class="section-heading reports-heading">
           <div class="section-title-group">
-            <span class="section-number" aria-hidden="true">05</span>
             <h2 id="reports-heading">Reports</h2>
           </div>
           <p id="report-status" class="result-status" role="status" aria-live="polite"></p>
@@ -158,7 +153,6 @@
       <section id="privacy" class="section-block privacy-section" aria-labelledby="privacy-heading">
         <div class="section-heading">
           <div class="section-title-group">
-            <span class="section-number" aria-hidden="true">06</span>
             <h2 id="privacy-heading">Privacy &amp; method</h2>
           </div>
         </div>

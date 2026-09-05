@@ -139,3 +139,21 @@ test("metadata and keyboard model match the publication surface", () => {
   assert.doesNotMatch(appSource, /range\.tabIndex\s*=\s*0/);
   assert.doesNotMatch(appSource, /row\.setAttribute\("role", "button"\)/);
 });
+
+test("section names provide orientation without decorative numbering", () => {
+  assert.doesNotMatch(html, /class="section-number"/);
+  const sectionNav = html.match(/<nav class="section-index"[\s\S]*?<\/nav>/)?.[0];
+  assert.ok(sectionNav);
+  for (const id of ["ancestry", "timeline", "chromosomes", "lineage", "reports", "privacy"]) {
+    assert.match(sectionNav, new RegExp(`href="#${id}"`));
+  }
+});
+
+test("profile choices opt into the shared select with native fallbacks", () => {
+  for (const id of ["ancestry-depth", "painting-confidence"]) {
+    assert.match(html, new RegExp(`<label[^>]+for="${id}"`));
+    assert.match(html, new RegExp(`<select id="${id}" data-ui-select`));
+  }
+  assert.match(appSource, /confidence\.value = "Most likely"/);
+  assert.ok(appSource.indexOf("window.JehlpUI?.enhance()") > appSource.indexOf("confidence.value ="));
+});
