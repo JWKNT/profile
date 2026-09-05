@@ -16,6 +16,8 @@
     <link rel="icon" href="https://jehlp.net/site-theme/v2/favicons/profile.png" type="image/png">
     <script src="https://jehlp.net/site-theme/v2/theme.js"></script>
     <link rel="stylesheet" href="https://jehlp.net/site-theme/v2/base.css">
+    <link rel="stylesheet" href="https://jehlp.net/site-theme/v2/components.css">
+    <script src="https://jehlp.net/site-theme/v2/components.js" defer></script>
     <link rel="stylesheet" href="assets/styles.css">
     <script src="data/profile-data.js" defer></script>
     <script src="assets/app.js" defer></script>
@@ -33,7 +35,7 @@
     </header>
 
     <main id="profile" class="profile-shell">
-      <nav class="section-index" aria-label="Profile sections">
+      <nav class="section-index" data-section-nav aria-label="Profile sections">
         <a href="#ancestry">Ancestry</a>
         <a href="#timeline">Timeline</a>
         <a href="#chromosomes">Chromosomes</a>
@@ -72,7 +74,7 @@
         </div>
         <details class="version-history">
           <summary>Compare Ancestry Composition v7.0 with v6.0</summary>
-          <div class="report-table-scroll version-table-scroll" tabindex="0" aria-label="Ancestry version comparison">
+          <div class="report-table-scroll version-table-scroll" data-scroll-region tabindex="0" aria-label="Ancestry version comparison">
             <table>
               <thead><tr><th>Population</th><th>v7.0</th><th>v6.0</th><th>Change</th><th>Note</th></tr></thead>
               <tbody id="version-table-body"></tbody>
@@ -192,17 +194,17 @@
       <p><a href="https://jehlp.net/">jehlp.net</a> · Source data remains private.</p>
     </footer>
 
-    <dialog id="report-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-result dialog-description">
-      <div class="dialog-shell">
-        <button type="button" class="dialog-close" id="dialog-close" aria-label="Close report details">×</button>
+    <dialog class="ui-dialog" data-dialog id="report-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-result dialog-description">
+      <form method="dialog" id="report-dismiss" class="ui-dialog-dismiss"><button id="dialog-close" aria-label="Close report details">×</button></form>
+      <div class="dialog-shell ui-dialog-body">
         <p class="dialog-kicker" id="dialog-category"></p>
         <h2 id="dialog-title"></h2>
         <p class="dialog-result" id="dialog-result"></p>
         <p id="dialog-description"></p>
         <details class="dialog-notes" id="dialog-notes"></details>
         <dl class="dialog-facts" id="dialog-facts"></dl>
-        <div class="dialog-variants" id="dialog-variants"></div>
-        <button type="button" class="text-button" id="dialog-done">Done</button>
+        <div class="dialog-variants" data-scroll-region aria-label="Tested report markers" id="dialog-variants"></div>
+        <button type="submit" form="report-dismiss" class="text-button" id="dialog-done">Done</button>
       </div>
     </dialog>
 

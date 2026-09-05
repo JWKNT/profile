@@ -36,31 +36,7 @@ p {
   overflow-wrap: anywhere;
 }
 
-.section-index {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px 18px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
-  background: var(--paper);
-  font-size: var(--text-ui, .875rem);
-  font-variant: small-caps;
-  letter-spacing: .35px;
-}
-
-.section-index a {
-  color: var(--muted);
-  text-decoration-color: transparent;
-}
-
-.section-index a:hover,
-.section-index a[aria-current="location"] {
-  color: var(--blue-dark);
-  text-decoration-color: currentColor;
-}
+.section-index { flex-wrap: wrap; }
 
 .section-block {
   scroll-margin-top: 46px;
@@ -91,9 +67,6 @@ p {
   margin: 20px auto 0;
 }
 
-#reports {
-  scroll-margin-top: 70px;
-}
 
 .section-heading h3 {
   margin: 0;
@@ -927,36 +900,6 @@ th {
 .site-footer p {
   margin: 0;
 }
-
-dialog {
-  width: min(760px, calc(100% - 32px));
-  max-height: calc(100vh - 32px);
-  padding: 0;
-  overflow: auto;
-  border: 1px solid var(--line-strong);
-  border-radius: 0;
-  background: var(--paper);
-  color: var(--ink);
-}
-
-dialog::backdrop {
-  background: rgb(0 0 0 / 48%);
-}
-
-.dialog-shell {
-  position: relative;
-  padding: 28px 30px 30px;
-}
-
-.dialog-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 31px;
-  padding: 0;
-  font-size: 20px;
-}
-
 .dialog-shell h2 {
   max-width: calc(100% - 40px);
   margin: 0;
@@ -1163,9 +1106,6 @@ dialog::backdrop {
     grid-row: 1;
   }
 
-  .dialog-shell {
-    padding: 23px 18px;
-  }
 
   .marker-table {
     min-width: 42rem;

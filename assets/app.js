@@ -71,45 +71,6 @@
   $("#dataset-date").textContent = meta.captured;
   $("#dataset-version").textContent = `Ancestry v${meta.ancestryVersion} · chip ${meta.genotypingChip}`;
 
-  const sectionLinks = [...document.querySelectorAll(".section-index a")];
-  const sectionIndex = $(".section-index");
-  const indexedSections = sectionLinks.map((link) => document.querySelector(link.hash)).filter(Boolean);
-  let sectionFrame;
-  let activeSectionId = "";
-  const updateCurrentSection = () => {
-    const marker = window.scrollY + $(".section-index").offsetHeight + 64;
-    const current = indexedSections.reduce(
-      (match, section) => section.offsetTop <= marker ? section : match,
-      null
-    );
-    sectionLinks.forEach((link) => {
-      if (current && link.hash === `#${current.id}`) link.setAttribute("aria-current", "location");
-      else link.removeAttribute("aria-current");
-    });
-    if (current && current.id !== activeSectionId) {
-      activeSectionId = current.id;
-      const activeLink = sectionLinks.find((link) => link.hash === `#${current.id}`);
-      if (activeLink && window.matchMedia("(max-width: 620px)").matches) {
-        sectionIndex.scrollTo({
-          left: activeLink.offsetLeft - (sectionIndex.clientWidth - activeLink.offsetWidth) / 2,
-          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
-        });
-      }
-    }
-  };
-  window.addEventListener("scroll", () => {
-    if (sectionFrame) return;
-    sectionFrame = window.requestAnimationFrame(() => {
-      updateCurrentSection();
-      sectionFrame = null;
-    });
-  }, { passive: true });
-  sectionLinks.forEach((link) => link.addEventListener("click", () => {
-    sectionLinks.forEach((item) => item.removeAttribute("aria-current"));
-    link.setAttribute("aria-current", "location");
-  }));
-  updateCurrentSection();
-
   const compositionBar = $("#composition-bar");
   const compositionList = $("#composition-list");
   const ancestryDepth = $("#ancestry-depth");
@@ -399,6 +360,7 @@
   });
   markerTable.append(markerHead, markerBody);
   const markerScroll = el("div", "report-table-scroll marker-scroll");
+  markerScroll.setAttribute("data-scroll-region", "");
   markerScroll.tabIndex = 0;
   markerScroll.setAttribute("aria-label", "All tested Neanderthal trait markers");
   markerScroll.append(markerTable);
@@ -557,15 +519,7 @@
   });
   renderReports();
 
-  const closeDialog = () => {
-    if (typeof dialog.close === "function") dialog.close();
-    else dialog.removeAttribute("open");
-  };
-  $("#dialog-close").addEventListener("click", closeDialog);
-  $("#dialog-done").addEventListener("click", closeDialog);
-  dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) closeDialog();
-  });
+  window.JehlpUI?.enhance();
 
   const fillList = (selector, rows) => {
     const list = $(selector);
