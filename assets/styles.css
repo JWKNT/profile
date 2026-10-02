@@ -4,9 +4,7 @@ body {
   line-height: 1.5;
 }
 
-.site-header,
-.profile-shell,
-.site-footer {
+.profile-shell, .site-footer {
   width: min(1180px, calc(100% - 44px));
   margin-inline: auto;
 }
@@ -972,9 +970,7 @@ td {
 }
 
 @media (max-width: 620px) {
-  .site-header,
-  .profile-shell,
-  .site-footer {
+  .profile-shell, .site-footer {
     width: min(100% - 26px, 1180px);
   }
 
