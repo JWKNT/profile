@@ -220,7 +220,7 @@ dialog button:focus-visible {
 }
 
 .subsection-heading .text-button {
-  min-height: 24px;
+  min-height: var(--control-size, 2.25rem);
   padding-block: 2px;
   white-space: nowrap;
 }
