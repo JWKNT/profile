@@ -527,8 +527,6 @@
   };
   fillList("#included-list", privacy.included);
   fillList("#removed-list", privacy.removed);
-  fillList("#processing-notes", privacy.processing);
-  $("#processing-count").textContent = `(${privacy.processing.length})`;
 
   if (location.hash) {
     const alignHashTarget = () => {

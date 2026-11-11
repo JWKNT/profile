@@ -846,11 +846,6 @@ td {
   color: var(--blue);
 }
 
-.processing-notes {
-  max-width: 860px;
-  color: var(--muted-strong);
-}
-
 .site-footer {
   display: flex;
   justify-content: space-between;
